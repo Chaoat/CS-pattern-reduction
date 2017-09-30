@@ -1,6 +1,7 @@
 from seed_class import seed
 #from DynamicProgrammingAlgorithm import DynamicCuttingStock as BinPacking
 from BinPacking import BinPacking as BinPacking
+from extract import ProcessExtraction
 import time
 
 class CuttingStockProblem():
@@ -22,8 +23,6 @@ class CuttingStockProblem():
         self.BestWaste = self.CalculateWaste(Solution)
         self.BestStrips = self.CalculateStrips(Solution)
         self.PrintCurrentSolution()
-
-        self.SolveCuttingStock()
 
     def TimeSelf(self, Timer):
         Timer += time.clock() - self.LastCheck
@@ -54,9 +53,7 @@ class CuttingStockProblem():
             if len(self.NodesToExamineStack) == 0:
                 Halt = True
 
-        self.PrintCurrentSolution()
-        print('FINAL SOLUTION')
-        self.PrintTimes()
+        return [self.BestSolution, 100 * self.BestWaste, self.BestStrips]
 
     def ExamineNode(self, Node):
         for i in range(10):
@@ -92,6 +89,8 @@ class CuttingStockProblem():
         Solution = self.CompileSolution(NewNode)
         if self.CalculateStrips(Solution) > self.BestStrips + 1:
             return True
+        #if self.CalculateWaste(Solution) > self.BestWaste:
+            #return True
 
         return False
 
@@ -154,14 +153,28 @@ class CuttingStockProblem():
             Node = Node.parent
         return Solution
 
+def RunTestData(file_num, runTime):
+    TestData = ProcessExtraction(file_num)
+    Strips = TestData[2]
+    StripSize = TestData[0]
+    SizeMult = TestData[1]
+
+    Problem = CuttingStockProblem(Strips, StripSize, runTime)
+    Solution = Problem.SolveCuttingStock()
+    print('Strips: ' + str(Solution[0]))
+    print('Waste: ' + str(Solution[1]) + '%')
+    print('NStrips used: ' + str(Solution[2]))
+
+    Problem.PrintTimes()
+
 if __name__ == '__main__':
-    StripSize = 560
-    Sizes = {138:22, 152:25, 156:12, 171:14, 182:18, 188:18, 193:20, 200:10, 205:12, 210:14, 214:16, 215:18, 220:20}
+    #StripSize = 560
+    #Sizes = {138:22, 152:25, 156:12, 171:14, 182:18, 188:18, 193:20, 200:10, 205:12, 210:14, 214:16, 215:18, 220:20}
     #StripSize = 10
     #Sizes = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5]
     #StripSize = 10
     #Sizes = {2:15, 3:10, 5:8}
 
-    Sizes = BinPacking(Sizes, StripSize, False)
+    #Sizes = BinPacking(Sizes, StripSize, False)
+    RunTestData('00111', 30)
 
-    CuttingStockProblem(Sizes, StripSize, 180)
