@@ -1,4 +1,5 @@
 import random
+import math
 #from DynamicProgrammingAlgorithm import DynamicCuttingStock as BinPacking
 from BinPacking import BinPacking as BinPacking
 
@@ -16,15 +17,26 @@ class seed():
         self.amount = amount
         self.stripSize = stripSize
         self.seedAmount = GreatestSize(bulk)
+        self.allowedWaste = self.CalculateWaste()
+
         Subset = FindSubsetFromStrips(bulk, self.seedAmount)
         LargerProblem.TimeSpentOther = LargerProblem.TimeSelf(LargerProblem.TimeSpentOther)
         self.table = GenerateDynamicTable(Subset, stripSize)
         LargerProblem.TimeSpentKnapSack = LargerProblem.TimeSelf(LargerProblem.TimeSpentKnapSack)
 
+    def CalculateWaste(self):
+        totalUse = 0
+        nStrips = 0
+        for strip in self.bins:
+            nStrips += self.bins[strip]['amount']
+            for size in self.bins[strip]['strip']:
+                totalUse += size * self.bins[strip]['amount']
+        return 1 - totalUse / (nStrips * self.stripSize)
+
     def getChild(self):
         while self.seedAmount > 1:
             self.LargerProblem.TimeSpentOther = self.LargerProblem.TimeSelf(self.LargerProblem.TimeSpentOther)
-            NewSeed = ReturnChild(self.table)
+            NewSeed = ReturnChild(self.table, 0)
             self.LargerProblem.TimeSpentKnapSack = self.LargerProblem.TimeSelf(self.LargerProblem.TimeSpentKnapSack)
             if NewSeed is not None:
                 newBulk = FindBulk(self.bins, NewSeed, self.seedAmount, self.stripSize)

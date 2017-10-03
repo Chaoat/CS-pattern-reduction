@@ -3,11 +3,11 @@ import random
 def GenerateDynamicTable(sizes, stripSize):
     DynamicTable = [0]*(stripSize + 1)
     for i in range(0, stripSize + 1):
-        DynamicTable[i] = {'currentSolution':[], 'remainingSizes':[], 'previousSolutions':[]}
+        DynamicTable[i] = {'currentSolution':[], 'remainingSizes':[], 'previousSolutions':[], 'returned':False}
 
     DynamicTable[0]['remainingSizes'] = DetermineAvailableSizes(stripSize, sizes)
 
-    ReturnChild(DynamicTable)
+    ReturnChild(DynamicTable, 0)
     #for i in range(0, stripSize + 1):
     #    if len(DynamicTable[i]['remainingSizes']) > 0:
     #        size = DynamicTable[i]['remainingSizes'].pop()
@@ -34,46 +34,59 @@ def DetermineAvailableSizes(spaceLeft, sizes):
     return AvailableSizes
 
 
-def ReturnChild(DynamicTable):
+def ReturnChild(DynamicTable, allowedWaste):
     TableLength = len(DynamicTable) - 1
-    returnSolution = DynamicTable[TableLength]['currentSolution']
+    returnSolution = 0
+    SolutionPosition = 1
 
-    NewSolutionFound = False
-    backtracking = True
-    CurrentPosition = TableLength - 1
-    while NewSolutionFound == False:
-        if backtracking:
-            if len(DynamicTable[CurrentPosition]['remainingSizes']) > 0:
-                size = DynamicTable[CurrentPosition]['remainingSizes'].pop()
-                newSolution = DynamicTable[CurrentPosition]['currentSolution'] + [size]
-                if CheckRepeatSolution(newSolution, DynamicTable[CurrentPosition + size]['previousSolutions']):
-                    DynamicTable[CurrentPosition + size]['previousSolutions'].append(newSolution)
-                    DynamicTable[CurrentPosition + size]['currentSolution'] = newSolution
-                    DynamicTable[CurrentPosition + size]['remainingSizes'] = DetermineAvailableSizes(TableLength - CurrentPosition - size, DynamicTable[CurrentPosition]['remainingSizes'])
-                    backtracking = False
-                    CurrentPosition = CurrentPosition + size
-            else:
-                CurrentPosition = CurrentPosition - 1
-        else:
-            if CurrentPosition == TableLength:
-                #print(DynamicTable[TableLength]['previousSolutions'])
-                NewSolutionFound = True
-            else:
+    while SolutionPosition <= allowedWaste:
+        if not DynamicTable[TableLength - SolutionPosition]['returned']:
+            returnSolution = DynamicTable[TableLength - SolutionPosition]['currentSolution']
+            DynamicTable[TableLength - SolutionPosition]['returned'] = True
+            break
+        SolutionPosition += 1
+
+    if returnSolution == 0:
+        returnSolution = DynamicTable[TableLength]['currentSolution']
+
+        NewSolutionFound = False
+        backtracking = True
+        CurrentPosition = TableLength - 1
+        while NewSolutionFound == False:
+            if backtracking:
                 if len(DynamicTable[CurrentPosition]['remainingSizes']) > 0:
                     size = DynamicTable[CurrentPosition]['remainingSizes'].pop()
                     newSolution = DynamicTable[CurrentPosition]['currentSolution'] + [size]
                     if CheckRepeatSolution(newSolution, DynamicTable[CurrentPosition + size]['previousSolutions']):
                         DynamicTable[CurrentPosition + size]['previousSolutions'].append(newSolution)
-                        DynamicTable[CurrentPosition + size]['currentSolution'] = DynamicTable[CurrentPosition]['currentSolution'] + [size]
+                        DynamicTable[CurrentPosition + size]['currentSolution'] = newSolution
                         DynamicTable[CurrentPosition + size]['remainingSizes'] = DetermineAvailableSizes(TableLength - CurrentPosition - size, DynamicTable[CurrentPosition]['remainingSizes'])
+                        DynamicTable[CurrentPosition + size]['returned'] = False
+                        backtracking = False
                         CurrentPosition = CurrentPosition + size
                 else:
-                    backtracking = True
                     CurrentPosition = CurrentPosition - 1
+            else:
+                if CurrentPosition == TableLength:
+                    #print(DynamicTable[TableLength]['previousSolutions'])
+                    NewSolutionFound = True
+                else:
+                    if len(DynamicTable[CurrentPosition]['remainingSizes']) > 0:
+                        size = DynamicTable[CurrentPosition]['remainingSizes'].pop()
+                        newSolution = DynamicTable[CurrentPosition]['currentSolution'] + [size]
+                        if CheckRepeatSolution(newSolution, DynamicTable[CurrentPosition + size]['previousSolutions']):
+                            DynamicTable[CurrentPosition + size]['previousSolutions'].append(newSolution)
+                            DynamicTable[CurrentPosition + size]['currentSolution'] = DynamicTable[CurrentPosition]['currentSolution'] + [size]
+                            DynamicTable[CurrentPosition + size]['remainingSizes'] = DetermineAvailableSizes(TableLength - CurrentPosition - size, DynamicTable[CurrentPosition]['remainingSizes'])
+                            DynamicTable[CurrentPosition + size]['returned'] = False
+                            CurrentPosition = CurrentPosition + size
+                    else:
+                        backtracking = True
+                        CurrentPosition = CurrentPosition - 1
 
-        if CurrentPosition < 0:
-            NewSolutionFound = True
-            DynamicTable[TableLength]['currentSolution'] = None
+            if CurrentPosition < 0:
+                NewSolutionFound = True
+                DynamicTable[TableLength]['currentSolution'] = None
 
     return returnSolution
 

@@ -176,5 +176,5 @@ if __name__ == '__main__':
     #Sizes = {2:15, 3:10, 5:8}
 
     #Sizes = BinPacking(Sizes, StripSize, False)
-    RunTestData('00111', 30)
+    RunTestData('00001', 30)
 
