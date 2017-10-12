@@ -8,6 +8,15 @@ from ReturnSeeds import ReturnChild
 
 class seed():
     def __init__(self, bulk, structure, parent, amount, stripSize, LargerProblem):
+        """
+        Innitialises the seed
+        :param bulk: The entire set space of strips, not counting the seed patterns found by the parents of the seed
+        :param structure: The seed pattern represented by this node
+        :param parent: The parent of this node
+        :param amount: The number of times this seed pattern is repeated
+        :param stripSize: The maximum allowed strip size
+        :param LargerProblem: A pointer to the overall cutting stock problem class
+        """
         self.LargerProblem = LargerProblem
         self.bins = bulk
         self.children = []
@@ -25,6 +34,10 @@ class seed():
         LargerProblem.TimeSpentKnapSack = LargerProblem.TimeSelf(LargerProblem.TimeSpentKnapSack)
 
     def CalculateWaste(self):
+        """
+        Calculates the total waste present in the bins
+        :return: The total waste
+        """
         totalUse = 0
         nStrips = 0
         for strip in self.bins:
@@ -34,6 +47,10 @@ class seed():
         return 1 - totalUse / (nStrips * self.stripSize)
 
     def getChild(self):
+        """
+        Returns a new seed node from the seed node
+        :return: The new node
+        """
         while self.seedAmount > 1:
             self.LargerProblem.TimeSpentOther = self.LargerProblem.TimeSelf(self.LargerProblem.TimeSpentOther)
             NewSeed = ReturnChild(self.table, 0)
@@ -53,6 +70,11 @@ class seed():
         return None
 
 def GreatestSize(strips):
+    """
+    Returns the greatest size in the strips
+    :param strips: The strips
+    :return: The largest size
+    """
     sizes = FindSubsetFromStrips(strips, 1)
     LargestSize = 0
     for i in sizes:
@@ -61,6 +83,14 @@ def GreatestSize(strips):
     return LargestSize
 
 def FindBulk(bulk, seed, amount, stripSize):
+    """
+    Calculates a new bulk, given the current bulk and the new seed
+    :param bulk: The current bulk
+    :param seed: The new seed
+    :param amount: The amount of times that new seed appears
+    :param stripSize: The maximum allowed stripsize
+    :return: The new bulk
+    """
     #print(seed)
     #print(bulk)
     BulkSizes = BulkToSizes(bulk)
@@ -74,6 +104,12 @@ def FindBulk(bulk, seed, amount, stripSize):
     return BulkSizes
 
 def FindSubsetFromStrips(strips, subset):
+    """
+    Finds a subset of strips which appear at least a certain number of times
+    :param strips: The strips to find the subset from
+    :param subset: The number of times they must appear
+    :return: The subset
+    """
     returnSizes = {}
     for strip in strips:
          for i in strips[strip]['strip']:
@@ -94,6 +130,11 @@ def FindSubsetFromStrips(strips, subset):
     return returnSizes
 
 def BulkToSizes(bulk):
+    """
+    Finds the list of sizes present within a given bulk
+    :param bulk: The bulk
+    :return: The sizes in the bulk
+    """
     Sizes = {}
     for strip in bulk:
         for size in bulk[strip]['strip']:
@@ -104,6 +145,11 @@ def BulkToSizes(bulk):
     return Sizes
 
 def ProcessSizesIntoDictionary(sizes):
+    """
+    Transforms a list of sizes into a dictionary of sizes
+    :param sizes: The list of sizes
+    :return: The dictionary containing the input list of sizes
+    """
     returnDictionary = {}
     for i in sizes:
         try:
@@ -113,6 +159,11 @@ def ProcessSizesIntoDictionary(sizes):
     return returnDictionary
 
 def bulk_to_array(bulk):
+    """
+    Transforms the bulk into an array of sizes (may not work anymore)
+    :param bulk: The bulk
+    :return: The array of sizes within the bulk
+    """
     output = []
     for key in bulk:
         output += bulk[key]*key

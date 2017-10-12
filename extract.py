@@ -1,4 +1,9 @@
 def extract(file_num):
+    """
+    Reads data from a test file
+    :param file_num: The number of the file
+    :return: An array containing the data of the test file
+    """
     file_num = str(file_num)
     if len(file_num)<5:
         file_num = "0"*(5-len(file_num))+file_num
@@ -44,6 +49,11 @@ def extract(file_num):
     return [PRX0,PRX1,dictionary,PRX3,PRX4] #PRX2 is just an array of ones
 
 def ProcessExtraction(file_num):
+    """
+    Reads a test file and converts it into a dictionary of strips.
+    :param file_num: The test file to read
+    :return: The strips, size multiplier, and max strip length
+    """
     Extraction = extract(file_num)
     StripLength = Extraction[0][1]
     NPAT = Extraction[0][6]
@@ -65,6 +75,13 @@ def ProcessExtraction(file_num):
     return [StripLength//SizeMult, SizeMult, Strips]
 
 def NarrowSizes(StripLength, Sizes, maxmult):
+    """
+    Attempts to find a common factor of all the sizes in the strips
+    :param StripLength: The max strip length
+    :param Sizes: The strips
+    :param maxmult: The largets allowed multiplier
+    :return: The highest common factor.
+    """
     bestMult = 1
     currentMult = 2
     while currentMult <= maxmult:

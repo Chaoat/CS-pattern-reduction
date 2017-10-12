@@ -1,6 +1,12 @@
 import random
 
 def GenerateDynamicTable(sizes, stripSize):
+    """
+    Generates the dynamic table which will be used in the dynamic programming knapsacking
+    :param sizes: The sizes
+    :param stripSize: The largest strip size
+    :return: The dynamic table
+    """
     DynamicTable = [0]*(stripSize + 1)
     for i in range(0, stripSize + 1):
         DynamicTable[i] = {'currentSolution':[], 'remainingSizes':[], 'previousSolutions':[], 'returned':False}
@@ -21,6 +27,12 @@ def GenerateDynamicTable(sizes, stripSize):
     return DynamicTable
 
 def DetermineAvailableSizes(spaceLeft, sizes):
+    """
+    Determines what sizes can fit in a remaining space
+    :param spaceLeft: The remaining space
+    :param sizes: All the sizes
+    :return: The subset of sizes representing the sizes that fit in the remaining space
+    """
     AvailableSizes = []
     if isinstance(sizes, list):
         for size in sizes:
@@ -35,6 +47,12 @@ def DetermineAvailableSizes(spaceLeft, sizes):
 
 
 def ReturnChild(DynamicTable, allowedWaste):
+    """
+    Returns a solution from a dynamic table
+    :param DynamicTable: The dynamic table to find the solution from
+    :param allowedWaste: The maximum allowed waste in the solution
+    :return: The new solution
+    """
     TableLength = len(DynamicTable) - 1
     returnSolution = 0
     SolutionPosition = 1
@@ -92,6 +110,12 @@ def ReturnChild(DynamicTable, allowedWaste):
 
 
 def CheckRepeatSolution(newSolution, Solutions):
+    """
+    Checks whether a given solution has already been found
+    :param newSolution: The new solution
+    :param Solutions: All the previous solutions
+    :return: True if solution is not repeat, False if it does repeat
+    """
     for solution in Solutions:
         i = 0
         if len(solution) == len(newSolution):

@@ -1,8 +1,13 @@
 import random
 
-def DynamicCuttingStock(sizes, stripSize, blank):
-    if isinstance(sizes, list):
-        sizes = ProcessSizesIntoDictionary(sizes)
+def DynamicCuttingStock(sizes, stripSize):
+    """
+    Dynamicly programmed solver for overall cutting stop problem.
+    :param sizes: Sizes, either as a dictionary or a list.
+    :param stripSize: The maximum strip length
+    :return: A dictionary of the strips.
+    """
+    sizes = FindSizesFromStrips(sizes)
     Strips = []
 
     while SizeLeft(sizes) == True:
@@ -20,7 +25,28 @@ def DynamicCuttingStock(sizes, stripSize, blank):
 
     return ProcessStripsIntoDictionary(Strips)
 
+def FindSizesFromStrips(strips):
+    """
+    Returns a list of sizes that are contained within a number of strips.
+    :param strips: The strips to check the sizes for
+    :return: The sizes in the strip as a dictionary
+    """
+    returnSizes = {}
+    for strip in strips:
+         for i in strips[strip]['strip']:
+            try:
+                returnSizes[i] += strips[strip]['amount']
+            except KeyError:
+                returnSizes[i] = strips[strip]['amount']
+
+    return returnSizes
+
 def SizeLeft(sizes):
+    """
+    Checks whether there are any sizes left.
+    :param sizes: The dictionary to check
+    :return: True if there is at least one size left, false otherwise.
+    """
     for length in sizes:
         if sizes[length] > 0:
             return True
@@ -98,6 +124,11 @@ def FillStrip(sizes, stripSize):
         #This should really just be return the last element.
 
 def QuickSort(sizes):
+    """
+    Sorts a list of sizes
+    :param sizes: The sizes to sort
+    :return: The sorted list of sizes
+    """
     if len(sizes) > 1:
         pivot = random.randint(0, len(sizes) - 1)
         LowList = []
@@ -115,6 +146,11 @@ def QuickSort(sizes):
         return sizes
 
 def ProcessSizesIntoDictionary(sizes):
+    """
+    Takes a list of sizes, and processes it into a dictionary of sizes
+    :param sizes: The list of sizes
+    :return: A dictionary representing the input list of sizes
+    """
     returnDictionary = {}
     for i in sizes:
         try:
@@ -124,6 +160,11 @@ def ProcessSizesIntoDictionary(sizes):
     return returnDictionary
 
 def ProcessStripsIntoDictionary(sizes):
+    """
+    Takes a list of strips and turns them into a dictionary of strips
+    :param sizes: The strips to convert
+    :return: A dictionary representing the input strips
+    """
     returnDictionary = {}
     for i in sizes:
         try:
